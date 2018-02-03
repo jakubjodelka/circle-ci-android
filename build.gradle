@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.2.0-alpha01'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        flatDir { dirs 'libs' }
+    }
+
+    ext.isCIBuild = { ->
+        return (System.getenv("CIRCLE_BUILD_URL") != null)
+    }
+
+    ext.getCIBuildNumber = { ->
+        return System.getenv("CIRCLE_BUILD_NUM")
+    }
+
+    ext.computeVersionCode = { ->
+        if (isCIBuild()) {
+            return getCIBuildNumber()?.trim()?.toInteger()
+        } else {
+            return 1
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
